@@ -1,0 +1,34 @@
+name: GLaDOS Auto Check-in
+
+on:
+  schedule:
+    # Run at 8:00 AM Beijing time (00:00 UTC) every day
+    - cron: '0 0 * * *'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  checkin:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install requests
+      
+      - name: Run check-in script
+        env:
+          GLADOS_COOKIE: ${{ secrets.GLADOS_COOKIE }}
+        run: |
+          python checkin.py
+      
+      - name: Show result
+        if: always()
+        run: echo "Check-in completed"
